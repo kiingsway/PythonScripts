@@ -1,2 +1,2 @@
 # PythonScripts
- Repositório para armazenar scripts ocasionais em Python. O objetivo é ter os scripts organizados conforme vou construindo-os.
+Repository to store occasional Python scripts. The goal is to keep the scripts organized as I build them.
