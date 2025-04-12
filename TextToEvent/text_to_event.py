@@ -5,24 +5,26 @@ import events_data
 event_list = events_data.event_list
 
 def parse_date(date_str):
-    """Função para interpretar e completar a data no formato DD/MM ou DD/MM/YY/DD/MM/YYYY"""
+    """Aceita formatos DD/MM, DD/MM/YY ou DD/MM/YYYY"""
     current_year = datetime.now().year
+
     try:
-        # Tentando interpretar a data com o ano atual caso seja DD/MM
-        if len(date_str) == 5:  # Formato DD/MM
+        if len(date_str) == 5: # Formato: DD/MM
             full_date = f"{date_str}/{current_year}"
             return datetime.strptime(full_date, "%d/%m/%Y")
-        
-        # Tentando interpretar a data com ano de 2 ou 4 dígitos (DD/MM/YY ou DD/MM/YYYY)
-        return datetime.strptime(date_str, "%d/%m/%Y")  # Formato DD/MM/YYYY ou DD/MM/YY
-    
+        elif len(date_str) == 8: # Formato: DD/MM/YY
+            return datetime.strptime(date_str, "%d/%m/%y")
+        elif len(date_str) == 10: # Formato: DD/MM/YYYY
+            return datetime.strptime(date_str, "%d/%m/%Y")
+        else:
+            raise ValueError
     except ValueError:
-        raise ValueError(f"Data '{date_str}' não é válida.")
+        raise ValueError(f"Data '{date_str}' não é válida. Use DD/MM, DD/MM/YY ou DD/MM/YYYY.")
 
 try:
     # Caminho da pasta onde o script está localizado
     base_path = os.path.dirname(os.path.abspath(__file__))
-    
+
     # Subpasta "ics_events" no mesmo nível do script
     output_folder = os.path.join(base_path, "ics_events")
     os.makedirs(output_folder, exist_ok=True)
@@ -34,16 +36,16 @@ try:
         return dt.strftime("%Y%m%dT%H%M%S")
 
     for event in event_list:
-        # Obter a data, título e horários do evento
+        # Obter dados do evento
         date_str = event['date']
         title = event['title']
         start_time_str = event['start_time']
         end_time_str = event['end_time']
-        
-        # Interpretar a data, seja no formato DD/MM, DD/MM/YY ou DD/MM/YYYY
+
+        # Interpretar a data corretamente
         event_date = parse_date(date_str)
-        
-        # Converter as strings de data e hora para datetime
+
+        # Criar datetime completo com hora
         start_dt = datetime.strptime(f"{event_date.strftime('%d/%m/%Y')} {start_time_str}", "%d/%m/%Y %H:%M")
         end_dt = datetime.strptime(f"{event_date.strftime('%d/%m/%Y')} {end_time_str}", "%d/%m/%Y %H:%M")
 
@@ -59,12 +61,12 @@ STATUS:CONFIRMED
 END:VEVENT"""
         events_ics.append(vevent)
 
-    # Montar o conteúdo final do arquivo .ics
+    # Montar o conteúdo final do .ics
     ics_full_content = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Your Name//Event Calendar//EN\n"
     ics_full_content += "\n".join(events_ics)
     ics_full_content += "\nEND:VCALENDAR"
 
-    # Caminho final do arquivo .ics
+    # Escrever arquivo
     final_ics_path = os.path.join(output_folder, "all_events.ics")
     with open(final_ics_path, "w", encoding="utf-8") as f:
         f.write(ics_full_content)
