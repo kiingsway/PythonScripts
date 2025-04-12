@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 import os
-import events_data
+try:
+    import TextToEvent.events_data as events_data
+except ImportError:
+    import TextToEvent.events_data_example as events_data
 
 event_list = events_data.event_list
 
