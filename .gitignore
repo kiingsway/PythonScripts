@@ -2,3 +2,4 @@ TextToEvent/ics_events
 TextToEvent/events_data.py
 **/__pycache__/
 *.pyc
+PythonScripts/PDF_OCR/**/*.pdf
